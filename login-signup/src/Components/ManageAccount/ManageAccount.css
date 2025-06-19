@@ -1,0 +1,92 @@
+/* src/components/ManageAccountPage.css */
+.manage-account-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+    background-color: rgba(238, 247, 251, 0.95);
+    min-height: 100vh;
+}
+
+.manage-account-card {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 550px;
+    text-align: center;
+}
+
+.manage-account-card h1 {
+    margin-bottom: 30px;
+    color: #1f2937;
+    font-size: 2em;
+}
+
+.manage-account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group input {
+    width: calc(100% - 20px); /* Adjust for padding */
+    padding: 12px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.form-group input.read-only-input {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.update-button {
+    background-color: #2563eb;
+    color: white;
+    padding: 14px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    margin-top: 20px;
+}
+
+.update-button:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+.success-message {
+    color: #10b981; /* Green for success */
+    background-color: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: #ef4444; /* Red for error */
+    background-color: #fef2f2;
+    border: 1px solid #fca5a5;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,81 @@
+
+.about-us-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    box-sizing: border-box; /* Include padding in element's total width */
+    background-color: rgba(238, 247, 251, 0.95);
+    /* background-image: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1350&q=80'); */
+}
+
+.about-us-card {
+    background: var(--white, #ffffff);
+    padding: 50px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+    color: var(--text, #1f2937);
+}
+
+.about-us-logo {
+    height: 120px;
+    margin-bottom: 30px;
+    animation: fadeIn 1s ease-out;
+}
+
+.about-us-card h1 {
+    font-size: 2.8em;
+    margin-bottom: 25px;
+    color: var(--primary, #2563eb);
+}
+
+.about-us-card p {
+    font-size: 1.1em;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: var(--text-light, #6b7280);
+    text-align: justify;
+}
+
+.about-us-card p:last-of-type {
+    margin-bottom: 40px;
+}
+
+.about-us-card strong {
+    color: var(--primary, #2563eb);
+}
+
+.contact-info {
+    margin-top: 40px;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 30px;
+}
+
+.contact-info h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: var(--text, #1f2937);
+}
+
+.contact-info p {
+    font-size: 1em;
+    margin-bottom: 10px;
+    color: var(--text-light, #6b7280);
+    text-align: center; /* Center align contact info */
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

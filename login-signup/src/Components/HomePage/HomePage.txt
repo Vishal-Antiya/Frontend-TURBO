@@ -1,0 +1,119 @@
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    margin-top: 20px;
+    padding: 0px 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  /* Logo */
+  .logo img {
+    height: 100px;
+    cursor: pointer;
+    
+  }
+  
+  /* Menu container */
+  .menu {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+  }
+  
+  /* Menu links */
+  .menu a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .menu a:hover {
+    color: #007bff;
+  }
+  
+  /* Dropdown wrapper */
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown img {
+    height: 30px;
+  }
+  
+  /* Dropdown button (username) */
+  .dropbtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    padding: 0px 8px;
+  }
+  
+  /* Dropdown content hidden by default */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 35px;
+    background-color: #fff;
+    min-width: 150px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+  }
+  
+  /* Dropdown menu items */
+  .dropdown-content a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #f5f5f5;
+  }
+  
+  /* Show dropdown on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+
+.productList{
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(200px, 1fr));
+    gap: 40px 60px;
+    padding: 0px 80px;
+
+}
+
+.product{
+    background: #fff;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 10px;
+}
+
+.product button{
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    width: 100%;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.product button:hover {
+    background: none;
+    font-size: 16px;
+    transition: color 1s ease;
+}
