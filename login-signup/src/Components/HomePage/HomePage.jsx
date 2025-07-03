@@ -48,7 +48,7 @@ const HomePage = () => {
             setCartLoading(prev => ({ ...prev, [productId]: true }));
 
             // Get JWT token from localStorage (you'll need to implement login first)
-            const token = localStorage.getItem('authToken');
+            const token = localStorage.getItem('jwtToken');
             
             if (!token) {
                 alert('Please login to add items to cart');

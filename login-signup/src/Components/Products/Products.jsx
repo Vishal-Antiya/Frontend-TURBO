@@ -47,7 +47,7 @@ const ProductListPage = () => {
         try {
             setCartLoading(prev => ({ ...prev, [productId]: true }));
 
-            const token = localStorage.getItem('authToken');
+            const token = localStorage.getItem('jwtToken');
             
             if (!token) {
                 alert('Please login to add items to cart');

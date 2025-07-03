@@ -1,208 +1,206 @@
 import React, { useState } from "react";
-import axios from "axios"; // Import axios for HTTP requests
+import axios from "axios";
 import './LoginSignup.css';
-import user_icon from '../Assets/user-icon.png'; // Make sure these paths are correct
+import user_icon from '../Assets/user-icon.png';
 import email_icon from '../Assets/email-icon.png';
 import pass_icon from '../Assets/pass-icon.png';
 
 const LoginSignup = () => {
-    const [action, setAction] = useState("Sign Up");
+  const [action, setAction] = useState("Sign Up");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [role, setRole] = useState("user"); // Default to 'user'
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-    // State for form inputs
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    // Assuming backend also accepts first name and last name for registration
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+  const API_BASE_URL = "http://localhost:8080";
 
-    // State for messages (success/error)
-    const [message, setMessage] = useState("");
-    const [error, setError] = useState("");
+  // Updated login handler to use different URL based on role
+  const handleLogin = async () => {
+    setMessage("");
+    setError("");
+    try {
+      // Decide endpoint based on role
+      let loginUrl;
+      if (role === "user") {
+        loginUrl = `${API_BASE_URL}/api/auth/login`;
+      } else if (role === "admin") {
+        loginUrl = `${API_BASE_URL}/api/admin/auth/login`;
+      }
 
-    // Base URL for your API Gateway
-    const API_BASE_URL = "http://localhost:8080"; // Adjust if your API Gateway is on a different port/host
+      const response = await axios.post(loginUrl, {
+        username: username,
+        password: password,
+      });
 
-    const handleLogin = async () => {
-        setMessage(""); // Clear previous messages
-        setError("");   // Clear previous errors
-        try {
-            const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
-                username: username,
-                password: password,
-            });
-
-            const { token } = response.data;
-            localStorage.setItem("jwtToken", token); // Store the token
-            setMessage("Login successful! Redirecting...");
-            console.log("Login successful! Token:", token);
-            // TODO: Redirect to dashboard or home page after successful login
-            window.location.href = "/home"; // Example redirect
-        } catch (err) {
-            console.error("Login error:", err);
-            if (err.response) {
-                // Server responded with a status other than 2xx
-                setError(err.response.data || "Invalid username or password.");
-            } else if (err.request) {
-                // Request was made but no response received
-                setError("No response from server. Please check your backend connection.");
+      const { token } = response.data;
+      localStorage.setItem("jwtToken", token);
+      setMessage("Login successful! Redirecting...");
+        if (role === "admin") {
+            window.location.href = "/admin-page";
             } else {
-                // Something else happened
-                setError("An unexpected error occurred during login.");
+            window.location.href = "/home";
             }
-        }
-    };
+    } catch (err) {
+      console.error("Login error:", err.response.data);
+      if (err.response) {
+        setError(err.response.data || "Invalid username or password.");
+      } else if (err.request) {
+        setError("No response from server. Please check your backend connection.");
+      } else {
+        setError("An unexpected error occurred during login.");
+      }
+    }
+  };
 
-    const handleSignUp = async () => {
-        setMessage(""); // Clear previous messages
-        setError("");   // Clear previous errors
-        try {
-            const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
-                username: username,
-                email: email,
-                passwordHash: password, // Important: backend expects 'passwordHash'
-                firstName: firstName,
-                lastName: lastName,
-            });
+  const handleSignUp = async () => {
+    setMessage("");
+    setError("");
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
+        username: username,
+        email: email,
+        passwordHash: password,
+        firstName: firstName,
+        lastName: lastName,
+      });
+      setMessage(response.data || "Registration successful! Please log in.");
+      setAction("Login");
+    } catch (err) {
+      console.error("Sign Up error:", err);
+      if (err.response) {
+        setError(err.response.data || "Registration failed. Username or email might be taken.");
+      } else if (err.request) {
+        setError("No response from server. Please check your backend connection.");
+      } else {
+        setError("An unexpected error occurred during registration.");
+      }
+    }
+  };
 
-            setMessage(response.data || "Registration successful! Please log in.");
-            console.log("Sign Up successful:", response.data);
-            // Optionally, switch to login view after successful signup
-            setAction("Login");
-        } catch (err) {
-            console.error("Sign Up error:", err);
-            if (err.response) {
-                setError(err.response.data || "Registration failed. Username or email might be taken.");
-            } else if (err.request) {
-                setError("No response from server. Please check your backend connection.");
-            } else {
-                setError("An unexpected error occurred during registration.");
-            }
-        }
-    };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (action === "Login") {
+      handleLogin();
+    } else {
+      handleSignUp();
+    }
+  };
 
-    const handleSubmit = (event) => {
-        event.preventDefault(); // Prevent default form submission behavior (page reload)
-        if (action === "Login") {
-            handleLogin();
-        } else {
-            handleSignUp();
-        }
-    };
-
-    return(
-        <div className="login-signup-container">
-        <div className="container">
-            <div className="header">
-                <div className="text">{action}</div>
-                <div className="underline"></div>
+  return (
+    <div className="login-signup-container">
+      <div className="container">
+        <div className="header">
+          <div className="text">{action}</div>
+          <div className="underline"></div>
+        </div>
+        <div className="submit-container">
+          <button
+            className={action === "Login" ? "submit" : "submit gray"}
+            onClick={() => setAction("Login")}
+          >
+            Login
+          </button>
+          <button
+            className={action === "Sign Up" ? "submit" : "submit gray"}
+            onClick={() => setAction("Sign Up")}
+          >
+            Sign Up
+          </button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="inputs">
+            <div className="input">
+              <img src={user_icon} alt="" />
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
             </div>
-
-            {/* Wrap inputs and submit buttons in a form element */}
-            <form onSubmit={handleSubmit}>
-                <div className="inputs">
-                    {action === "Sign Up" && (
-                        <>
-                            <div className="input">
-                                <img src={user_icon} alt="User Icon" />
-                                <input
-                                    type="text"
-                                    placeholder="Username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="input">
-                                <img src={user_icon} alt="First Name Icon" />
-                                <input
-                                    type="text"
-                                    placeholder="First Name"
-                                    value={firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                />
-                            </div>
-                            <div className="input">
-                                <img src={user_icon} alt="Last Name Icon" />
-                                <input
-                                    type="text"
-                                    placeholder="Last Name"
-                                    value={lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    {/* Username/Email for Login and Email for Signup */}
-                    {action === "Login" ? (
-                         <div className="input">
-                            <img src={user_icon} alt="User Icon" />
-                            <input
-                                type="text"
-                                placeholder="Username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                            />
-                        </div>
-                    ) : (
-                        <div className="input">
-                            <img src={email_icon} alt="Email Icon" />
-                            <input
-                                type="email"
-                                placeholder="E-mail Id"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-                    )}
-
-
-                    <div className="input">
-                        <img src={pass_icon} alt="Password Icon" />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+            {action === "Sign Up" && (
+              <>
+                <div className="input">
+                  <img src={email_icon} alt="" />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
-
-                {/* Display messages */}
-                {message && <p style={{ color: 'green', textAlign: 'center' }}>{message}</p>}
-                {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-
-                {action === "Login" ? (
-                    <div className="forgot-pass">Lost Password? <span>Click Here</span></div>
-                ) : (
-                    <div/>
-                )}
-
-                <div className="submit-container">
-                    {/* Make these buttons submit the form */}
-                    <button
-                        type="submit"
-                        className={action === "Login" ? "submit gray" : "submit"}
-                        onClick={() => setAction("Sign Up")} // This will change action and trigger re-render, then submit
-                    >
-                        Sign Up
-                    </button>
-                    <button
-                        type="submit"
-                        className={action === "Sign Up" ? "submit gray" : "submit"}
-                        onClick={() => setAction("Login")} // This will change action and trigger re-render, then submit
-                    >
-                        Login
-                    </button>
+                <div className="input">
+                  <img src={user_icon} alt="" />
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                  />
                 </div>
-            </form>
-        </div>
-        </div>
-    );
+                <div className="input">
+                  <img src={user_icon} alt="" />
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                  />
+                </div>
+              </>
+            )}
+            <div className="input">
+              <img src={pass_icon} alt="" />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            {/* DROPDOWN for LOGIN only */}
+            {action === "Login" && (
+              <div className="input">
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "8px",
+                    border: "1px solid #e5e7eb",
+                    fontSize: "16px"
+                  }}
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            )}
+          </div>
+          <div className="forgot-pass">
+            {action === "Login" && <span>Forgot Password?</span>}
+          </div>
+          {message && <div className="message success">{message}</div>}
+          {error && <div className="message error">{error}</div>}
+          <div className="submit-container">
+            <button type="submit" className="submit">
+              {action}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default LoginSignup;
