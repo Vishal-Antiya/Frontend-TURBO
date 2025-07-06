@@ -1,0 +1,44 @@
+.confirmation-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f7f7;
+}
+
+.confirmation-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 48px 32px 32px 32px;
+  text-align: center;
+  max-width: 400px;
+  width: 90vw;
+}
+
+.confirmation-tick {
+  margin-bottom: 24px;
+}
+
+.confirmation-message h2 {
+  color: #34c759;
+  font-size: 1.6rem;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.back-shopping-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 36px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.back-shopping-btn:hover {
+  background: #0056b3;
+}

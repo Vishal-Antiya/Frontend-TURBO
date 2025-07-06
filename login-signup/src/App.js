@@ -9,7 +9,7 @@ import Products from './Components/Products/Products';
 import AdminPage from './Components/AdminPage/AdminPage';
 import Cart from './Components/Cart/Cart';
 import MyOrders from './Components/MyOrders/MyOrders';
-
+import OrderConfirmation from './Components/OrderConfirmation/OrderConfirmation';
 
 function App() {
   return (
@@ -24,6 +24,7 @@ function App() {
         <Route path="/admin-page" element={<AdminPage />}/>
         <Route path="/cart" element={<Cart />}/>
         <Route path="/orders" element={<MyOrders />}/>
+        <Route path="/order-confirmation" element={<OrderConfirmation />}/>
       </Routes>
     </Router>
   );

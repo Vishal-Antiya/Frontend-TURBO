@@ -1,6 +1,7 @@
 // Cart.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { loadStripe } from '@stripe/stripe-js';
 import productImg from '../Assets/product.jpg'; // fallback image
 import "./Cart.css";
 
@@ -100,8 +101,52 @@ const Cart = () => {
   if (!cart || !cart.orderItems || cart.orderItems.length === 0)
     return <div className="cart-empty">Your cart is empty.</div>;
 
+  const stripePromise = loadStripe('pk_test_51Rhp7XRqe1W0mF16BiHWv8hfQ0IQIohe6e2idnCY0MLyMZTRUS3ugfxudjgIPoSrsfyLgbN1zb7rEnS6yRzlNMGs009tpp5coH'); 
+
+const handleStripeCheckout = async () => {
+  const token = localStorage.getItem("jwtToken");
+  // Prepare items array from cart
+  const items = cart.orderItems.map(item => ({
+    name: productDetails[item.productId]?.name || "Product",
+    amount: Math.round(item.priceAtPurchase * 100), // in paise
+    quantity: item.quantity
+  }));
+
+const orderId = cart.id;
+
+  const res = await fetch('http://localhost:8085/api/payments/create-checkout-session', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ items, orderId }) // <-- orderId included here
+  });
+  const data = await res.json();
+  if (data.url) {
+    window.location.href = data.url;
+  }
+};
+
+const handleCashOnDelivery = async () => {
+  const token = localStorage.getItem("jwtToken");
+  await fetch('http://localhost:8083/api/orders/checkout', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  window.location.href = '/order-confirmation'; // Redirect to order confirmation page
+};
+
+const handleBackClick = () => {
+    window.location.href = '/home';
+  };
+
   return (
     <div className="cart-container">
+        {/* Back Button */}
+      <button className="back-button" onClick={handleBackClick}>
+        🏠︎ Home
+      </button>
       <div className="cart-box">
         {cart.orderItems.map((item) => {
           const details = productDetails[item.productId] || {};
@@ -133,13 +178,16 @@ const Cart = () => {
         })}
       </div>
       <div className="cart-footer">
-        <div className="cart-total">
-          Total: <b>₹{cart.totalAmount?.toFixed(2)}</b>
-        </div>
-        <button className="checkout-btn" onClick={handleCheckout}>
-          Checkout
-        </button>
-      </div>
+    <div className="cart-total">
+      Total: <b>₹{cart.totalAmount?.toFixed(2)}</b>
+    </div>
+    <button className="checkout-btn" onClick={handleStripeCheckout}>
+      Pay with Card
+    </button>
+    <button className="checkout-btn" onClick={handleCashOnDelivery}>
+      Cash on Delivery
+    </button>
+     </div>
       {message && <div className="cart-message">{message}</div>}
     </div>
   );

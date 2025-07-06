@@ -139,7 +139,7 @@ const HomePage = () => {
                                 {productItem.name || 'Unnamed Product'}
                             </h3>
                             <p className="product-price">
-                                ${productItem.price ? productItem.price.toFixed(2) : 'N/A'}
+                                ₹{productItem.price ? productItem.price.toFixed(2) : 'N/A'}
                             </p>
                             <p className="product-description">
                                 {productItem.description || 'No description available'}
