@@ -55,7 +55,7 @@ const HomePage = () => {
                 return;
             }
 
-            const response = await fetch('http://localhost:8080/api/orders/cart/add', {
+            const response = await fetch('http://localhost:8083/api/orders/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

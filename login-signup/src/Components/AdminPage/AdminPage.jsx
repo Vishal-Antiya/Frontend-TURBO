@@ -9,11 +9,10 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [newUser, setNewUser] = useState({ username: "", email: "", passwordHash: "" });
-  const [newAdmin, setNewAdmin] = useState({ username: "", email: "", passwordHash: "", roles: ["ADMIN"] });
+  const [newUser, setNewUser] = useState({username: "", email: "", passwordHash: "", isAdmin: false});
   const [newProduct, setNewProduct] = useState({ name: "", price: "", description: "", stockQuantity: "" });
   const [editProduct, setEditProduct] = useState(null);
-  const [adminEmail, setAdminEmail] = useState("");
+  // const [adminEmail, setAdminEmail] = useState("");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -25,7 +24,7 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      const res = await axios.get(`${API_BASE_URL}/api/users/allUsers`, {
+      const res = await axios.get(`${API_BASE_URL}/api/admin/allUsers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(res.data);
@@ -46,7 +45,7 @@ const AdminDashboard = () => {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      const res = await axios.get(`${API_BASE_URL}/api/orders`, {
+      const res = await axios.get(`http://localhost:8083/api/orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOrders(res.data);
@@ -55,19 +54,24 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleMakeAdmin = async () => {
-    try {
-      const token = localStorage.getItem("jwtToken");
-      await axios.post(`${API_BASE_URL}/api/admin/create`, newAdmin, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setMessage("Admin added!");
-      setNewUser({ username: "", email: "", password: ""});
-      fetchUsers();
-    } catch (err) {
-      setMessage("Failed to add user");
-    }
-  };
+const handleMakeAdmin = async () => {
+  try {
+    const token = localStorage.getItem("jwtToken");
+    // Convert isAdmin to roles array
+    const userToSend = {
+      ...newUser,
+      roles: newUser.isAdmin ? ["ROLE_ADMIN"] : []
+    };
+    await axios.post(`${API_BASE_URL}/api/admin/create`, userToSend, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setMessage("Admin added!");
+    setNewUser({ username: "", email: "", passwordHash: "", isAdmin: false });
+    fetchUsers();
+  } catch (err) {
+    setMessage("Failed to add user");
+  }
+};
 
   const handleAddUser = async () => {
     try {
@@ -99,7 +103,7 @@ const AdminDashboard = () => {
   const handleAddProduct = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      await axios.post(`${API_BASE_URL}/api/products`, newProduct, {
+      await axios.post(`${API_BASE_URL}/api/products/create`, newProduct, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessage("Product added!");
@@ -137,6 +141,21 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      await axios.put(
+        `http://localhost:8083/api/orders/${orderId}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessage("Order status updated!");
+      fetchOrders();
+    } catch (err) {
+      setMessage("Failed to update order status");
+    }
+  };
+
   return (
     <div className="admin-dashboard-container">
       <h1>Admin Dashboard</h1>
@@ -149,16 +168,6 @@ const AdminDashboard = () => {
       </div>
       {message && <div className={`admin-message ${message.includes("Failed") ? "error" : "success"}`}>{message}</div>}
 
-      {/* {tab === "admins" && (
-        <div>
-          <h2 className="admin-section-title">Make Another Admin</h2>
-          <div className="admin-form">
-            <input type="email" placeholder="User Email" value={adminEmail} onChange={e => setAdminEmail(e.target.value)} />
-            <button onClick={handleMakeAdmin}>Grant Admin Rights</button>
-          </div>
-        </div>
-      )} */}
-
       {tab === "users" && (
         <div>
           <h2 className="admin-section-title">Manage Users</h2>
@@ -166,20 +175,21 @@ const AdminDashboard = () => {
             <input type="text" placeholder="Username" value={newUser.username} onChange={e => setNewUser({ ...newUser, username: e.target.value })} />
             <input type="email" placeholder="Email" value={newUser.email} onChange={e => setNewUser({ ...newUser, email: e.target.value })} />
             <input type="password" placeholder="Password" value={newUser.password} onChange={e => setNewUser({ ...newUser, password: e.target.value })} />
-            <label><input type="checkbox" checked={newUser.isAdmin} onChange={e => setNewAdmin({ ...newUser, isAdmin: e.target.checked })} /> Is Admin</label>
+            <label>
+                <input type="checkbox" checked={newUser.isAdmin} onChange={e => setNewUser({ ...newUser, isAdmin: e.target.checked })}/> Is Admin</label>
             <button onClick={newUser.isAdmin ? handleMakeAdmin : handleAddUser}> Add User</button>
           </div>
           <table className="admin-table">
             <thead>
               <tr><th>ID</th><th>Username</th><th>Email</th><th>Admin</th><th>Actions</th></tr>
             </thead>
-            <tbody>
+            <tbody> 
               {users.map(u => (
                 <tr key={u.id}>
                   <td>{u.id}</td>
                   <td>{u.username}</td>
                   <td>{u.email}</td>
-                  <td>{u.isAdmin ? "Yes" : "No"}</td>
+                  <td>{u.roles && u.roles.includes("ROLE_ADMIN") ? "Yes" : "No"}</td>
                   <td><button className="delete-btn" onClick={() => handleDeleteUser(u.id)}>Delete</button></td>
                 </tr>
               ))}
@@ -241,10 +251,18 @@ const AdminDashboard = () => {
               {orders.map(o => (
                 <tr key={o.id}>
                   <td>{o.id}</td>
-                  <td>{o.user?.username || o.userId}</td>
-                  <td>{o.items?.map(item => (<div key={item.productId}>{item.productName} (x{item.quantity})</div>))}</td>
+                  <td>{o.username}</td>
+                  <td>{o.orderItems?.map(orderItems => (<div key={orderItems.id}>{orderItems.productId} (x{orderItems.quantity})</div>))}</td>
                   <td>{o.totalAmount}</td>
-                  <td>{o.status}</td>
+                  <td>
+                      <select
+                        value={o.status}
+                        onChange={e => handleStatusChange(o.id, e.target.value)} >
+                        <option value="PENDING">PENDING</option>
+                        <option value="PLACED">PLACED</option>
+                        <option value="SHIPPED">SHIPPED</option>
+                        <option value="DELIVERED">DELIVERED</option>
+                        <option value="CANCELLED">CANCELLED</option> </select>  </td>
                 </tr>
               ))}
             </tbody>
